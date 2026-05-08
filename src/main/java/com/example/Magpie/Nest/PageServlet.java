@@ -1,6 +1,5 @@
 package com.example.Magpie.Nest;
 
-import org.apache.coyote.Response;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -12,27 +11,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.*;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
 
 @Controller
-@RequestMapping("/Magpie")
+@RequestMapping("/")
 public class PageServlet
 {
     String downloadDir = System.getProperty("java.io.tmpdir") + "/magpie-videos";
     File folder = new File(downloadDir);
 
     @GetMapping
+    protected String redirect() { return "redirect:/Magpie"; }
+
+    @GetMapping("Magpie")
     protected String loadPage()
     {
         return "DownloadPage";
     }
 
-    //TODO: ADD OTHER LANGUAGE SUPPORTS
-    @GetMapping("/downloadVideo")
+    @GetMapping("Magpie/downloadVideo")
     @ResponseBody
     protected ResponseEntity<Resource> downloadVideo(@RequestParam String link)
     {
