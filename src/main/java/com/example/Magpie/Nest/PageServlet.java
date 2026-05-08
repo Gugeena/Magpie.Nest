@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
+import java.io.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -22,6 +22,9 @@ import java.util.Comparator;
 @RequestMapping("/Magpie")
 public class PageServlet
 {
+    String downloadDir = System.getProperty("java.io.tmpdir") + "/magpie-videos";
+    File folder = new File(downloadDir);
+
     @GetMapping
     protected String loadPage()
     {
@@ -31,29 +34,49 @@ public class PageServlet
     //TODO: ADD OTHER LANGUAGE SUPPORTS
     @GetMapping("/downloadVideo")
     @ResponseBody
-    protected ResponseEntity<Resource> downloadVideo(@RequestParam String link) throws IOException, InterruptedException
+    protected ResponseEntity<Resource> downloadVideo(@RequestParam String link)
     {
-        String downloadDir = "C:\\Users\\lasha\\OneDrive\\Documents\\Videos";
         if(link.startsWith("https://www.youtube.com/watch?v"))
         {
-            ProcessBuilder processBuilder = new ProcessBuilder("yt-dlp", "-f", "best", link);
-            processBuilder.directory(new File(downloadDir));
-            processBuilder.start().waitFor();
+            try
+            {
+                if(!folder.exists()) folder.mkdirs();
 
-            File folder = new File(downloadDir);
+                ProcessBuilder processBuilder = new ProcessBuilder("yt-dlp", "-f", "best", link);
+                processBuilder.directory(new File(downloadDir));
+                Process process = processBuilder.start();
 
-            File[] files = folder.listFiles();
+                int exitCode = process.waitFor();
 
-            File latest = Arrays.stream(files).filter(File::isFile).max(Comparator.comparingLong(File::lastModified)).orElseThrow();
+                if (exitCode != 0)
+                {
+                    return ResponseEntity.internalServerError().build();
+                }
 
-            Path path = latest.toPath();
-            Resource resource = new UrlResource(path.toUri());
+                File[] files = folder.listFiles();
 
-            return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""
-                            + latest.getName() + "\"")
-                    .body(resource);
+                if (files == null || files.length == 0)
+                {
+                    return ResponseEntity.notFound().build();
+                }
+
+                File latest = Arrays.stream(files).filter(File::isFile).max(Comparator.comparingLong(File::lastModified)).orElseThrow();
+
+                Path path = latest.toPath();
+                Resource resource = new UrlResource(path.toUri());
+
+                String encodedFileName = java.net.URLEncoder.encode(latest.getName(), StandardCharsets.UTF_8)
+                        .replaceAll("\\+", "%20");
+
+                return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encodedFileName)
+                        .body(resource);
+            }
+            catch (Exception e)
+            {
+                return ResponseEntity.internalServerError().build();
+            }
         }
-        return null;
+        return ResponseEntity.badRequest().build();
     }
 }
 
