@@ -10,7 +10,7 @@ body
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-  font-family: Playfair;
+  font-family: 'Playfair Display';
   font-weight: bold;
 }
 
@@ -24,6 +24,23 @@ Button
     margin-top: 1.3rem;
 }
 
+.content-wrapper
+{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.footer
+{
+    width: 100%;
+    padding: 1rem 0;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
 Button:hover
 {
     background-color: #FFFEF3;
@@ -33,12 +50,14 @@ h1
 {
     margin-top: 1rem;
     font-size: clamp(1.7rem, 4.7vw, 3.7rem);
+    margin-bottom: 0.6rem;
 }
 
 h4
 {
-   margin-top: 1rem;
+   margin-top: 0.6rem;
    font-size: clamp(0.7rem, 2.3vw, 1.7rem);
+   margin-bottom: 3rem;
 }
 
 img
@@ -55,6 +74,11 @@ input
     font-weight: bold;
 }
 
+input:hover, input:focus, option
+{
+    background-color: #FFFFFF;
+}
+
 p
 {
     margin-top: 0px;
@@ -63,4 +87,15 @@ p
 .status
 {
     text-align: center;
+}
+
+select
+{
+    background-color: #FFF9C4;
+    margin-bottom: 1.5rem;
+}
+
+select:hover, option:hover
+{
+    background-color: #FFFEF3;
 }

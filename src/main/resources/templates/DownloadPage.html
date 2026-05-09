@@ -9,12 +9,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Ultra&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Welcome to Magpie.Nest</h1>
-    <h4>Download youtube videos in MP4 format</h4>
-    <input type="text" placeholder="Link" id="link">
-    <!-- <input type="file" class="file" webkitdirectory directory multiple> -->
-    <Button onclick="download()">Download</Button>
-    <script src="/Download.js"></script>
-    <p id="status" class="status"></p>
+    <div class="content-wrapper">
+        <h1>Welcome to Magpie.Nest</h1>
+        <h4>Download youtube videos in MP4 format</h4>
+        <input type="text" placeholder="Link" id="link">
+        <label for="quality">Limit quality:</label>
+        <select id="quality" name="dropdown">
+            <option value="best">Best</option>
+            <option value="1080">1080p</option>
+            <option value="720">720p</option>
+            <option value="480">480p</option>
+        </select>
+        <!-- <input type="file" class="file" webkitdirectory directory multiple> -->
+        <Button onclick="download()">Download</Button>
+        <script src="/Download.js"></script>
+        <p id="status" class="status"></p>
+    </div>
+
+    <footer>
+        <p class="footer">Note that download time is dependent on the quality and length of the video</p>
+    </footer>
 </body>
 </html>

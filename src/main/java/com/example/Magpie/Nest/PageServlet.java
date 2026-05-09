@@ -22,6 +22,10 @@ public class PageServlet
 {
     String downloadDir = System.getProperty("java.io.tmpdir") + "/magpie-videos";
     File folder = new File(downloadDir);
+    String cookies = new File("www.youtube.com_cookies.txt").getAbsolutePath();
+
+    String bestFallback = "/best";
+    String capFormat = "bestvideo[height<=%s][ext=mp4]+bestaudio[ext=m4a]/best[height<=%s][ext=mp4]";
 
     @GetMapping
     protected String redirect() { return "redirect:/Magpie"; }
@@ -34,20 +38,30 @@ public class PageServlet
 
     @GetMapping("Magpie/downloadVideo")
     @ResponseBody
-    protected ResponseEntity<Resource> downloadVideo(@RequestParam String link)
+    protected ResponseEntity<Resource> downloadVideo(@RequestParam String link, @RequestParam String quality)
     {
         if(link.startsWith("https://www.youtube.com/watch?v"))
         {
             try
             {
+                System.out.println("received");
                 if(!folder.exists()) folder.mkdirs();
 
-                ProcessBuilder processBuilder = new ProcessBuilder("/usr/local/bin/yt-dlp", "--no-playlist",
+                /*
+                ProcessBuilder processBuilder = new ProcessBuilder("yt-dlp", "--no-playlist",
                         "--force-ipv4",
-                        "--cookies", "/home/opc/yt-cookies.txt",
-                        "--extractor-args", "youtube:player_client=web,android",
                         "-f", "bestvideo[protocol^=https]+bestaudio/best[protocol^=https]",
                         "--merge-output-format", "mp4", link);
+
+                 */
+                
+                String qualityCom;
+                if(quality.equals("best")) qualityCom = "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]";
+                else qualityCom = String.format(capFormat, quality, quality);
+
+                qualityCom += bestFallback;
+
+                ProcessBuilder processBuilder = new ProcessBuilder("yt-dlp", "-f", qualityCom, "--cookies", cookies, link);
                 processBuilder.directory(new File(downloadDir));
                 processBuilder.redirectErrorStream(true);
                 Process process = processBuilder.start();
