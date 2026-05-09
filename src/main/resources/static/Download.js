@@ -10,7 +10,8 @@ function download()
         return;
     }
     const params = new URLSearchParams({link: link, quality: quality})
-    const url = `http://localhost:8080/Magpie/downloadVideo?${params.toString()}`
+    //const url = `http://localhost:8080/Magpie/downloadVideo?${params.toString()}`
+    const url = `https://precision-wagon-vicinity.ngrok-free.dev/Magpie/downloadVideo?${params.toString()}`
     window.location.href = url;
     document.getElementById("link").value = '';
     document.getElementById("status").innerHTML = 'Download started';

@@ -54,7 +54,7 @@ public class PageServlet
                         "--merge-output-format", "mp4", link);
 
                  */
-                
+
                 String qualityCom;
                 if(quality.equals("best")) qualityCom = "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]";
                 else qualityCom = String.format(capFormat, quality, quality);
