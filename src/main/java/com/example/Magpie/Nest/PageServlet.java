@@ -42,14 +42,30 @@ public class PageServlet
             {
                 if(!folder.exists()) folder.mkdirs();
 
-                ProcessBuilder processBuilder = new ProcessBuilder("yt-dlp", "-f", "best", link);
+                ProcessBuilder processBuilder = new ProcessBuilder("/usr/local/bin/yt-dlp", "--no-playlist",
+                        "--force-ipv4",
+                        "--cookies", "/home/opc/yt-cookies.txt",
+                        "--extractor-args", "youtube:player_client=web,android",
+                        "-f", "bestvideo[protocol^=https]+bestaudio/best[protocol^=https]",
+                        "--merge-output-format", "mp4", link);
                 processBuilder.directory(new File(downloadDir));
+                processBuilder.redirectErrorStream(true);
                 Process process = processBuilder.start();
+
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+                String line;
+
+                while((line = bufferedReader.readLine()) != null)
+                {
+                    System.out.println(line);
+                }
 
                 int exitCode = process.waitFor();
 
                 if (exitCode != 0)
                 {
+                    System.out.println("error: " + exitCode);
                     return ResponseEntity.internalServerError().build();
                 }
 
@@ -67,6 +83,11 @@ public class PageServlet
 
                 String encodedFileName = java.net.URLEncoder.encode(latest.getName(), StandardCharsets.UTF_8)
                         .replaceAll("\\+", "%20");
+
+                for(File f : files)
+                {
+                    if (!f.equals(latest)) f.delete();
+                }
 
                 return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encodedFileName)
                         .body(resource);
